@@ -1,0 +1,102 @@
+---
+title: "607 Homework 1"
+author: "Dariusz Siergiejuk"
+date: "9/1/2020"
+output: html_document
+---
+
+# Load Libraries
+
+```{r}
+library(ggplot2)
+library(stats)
+library(devtools)
+library(RCurl)
+```
+
+```{r}
+library(plyr)
+```
+
+# Import file as CVS, check variables.
+
+## Data File comes with a header row so we must indicate "header=T".
+
+```{r}
+x <- getURL("https://raw.githubusercontent.com/fivethirtyeight/data/master/librarians/librarians-by-msa.csv")
+y<-data.frame(read.csv(text=x, header=T))
+dim(y)
+```
+
+
+```{r}
+head(y)
+```
+
+# Rename Column Headers
+
+```{r}
+head(rename(y,c("prim_state"="State","area_name"="Area","tot_emp"="Employee Count","emp_prse"="Present","jobs_1000"="Jobs","loc_quotient"="Quotient")))
+```
+
+# Select a subset by row.
+
+## How many wood libraries are over the present?
+
+```{r}
+LibrariesPresent <- subset(y, prim_state <80 & emp_prse=="Present")
+LibrariesPresent
+```
+
+
+```{r}
+summary(LibrariesPresent)
+```
+
+## How many libraries are over the present?
+
+```{r}
+LibrariesPresent <- subset(y, prim_state <10 & emp_prse=="Present")
+LibrariesPresent
+```
+
+```{r}
+summary(LibrariesPresent)
+```
+
+# Select a subset by column and row.
+
+## Show select information for new/old libraries.
+
+```{r}
+LibrariesNew<-subset(y,prim_state>1.61,select=c(area_name,tot_emp,jobs_1000,loc_quotient))
+LibrariesNew
+```
+
+```{r}
+summary(LibrariesNew)
+```
+
+# Bar Plot
+
+## What's the quotient by state?
+
+```{r}
+barplot(table(y$loc_quotient), ylim=c(1,5.00),main="Quotient by State")
+```
+
+End of File
+
+
+
+
+
+
+
+
+
+
+
+
+
+
