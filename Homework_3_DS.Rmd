@@ -1,0 +1,173 @@
+---
+title: "Assignment Three"
+author: "Dariusz Siergiejuk"
+date: "`r Sys.Date()`"
+output: 
+  prettydoc::html_pretty:
+    theme: hpstr
+    highlight: github
+# Possible pretty doc themes are:
+#     cayman, architect, tactile, hpstr, leonids
+---
+
+### Assignment Goal
+
+In prior assignments we scrutinized data sets that came in table format. The goal of assignment at hand is to make use of regular expressions and all-important string functions for inspecting data that are not readily available in the form of elegantly organized data sets yet in ordinary text.
+
+Please deliver links to an R Markdown file (in GitHub and rpubs.com) with solutions to the problems below.
+You may work in a small group, but please submit separately with names of all group participants in your submission.
+
+### 1. Using the 173 majors listed in fivethirtyeight.com’s College Majors dataset [https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/],provide code that identifies the majors that contain either "DATA" or "STATISTICS"
+
+```{r}
+library(readr)
+library(RCurl)
+library(tidyverse)
+
+x <- getURL("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/majors-list.csv")
+majors <- read.csv(text=x)
+
+majors_data <- data.frame(majors)
+stats_data_majors <- subset(majors_data, grepl("DATA", Major) | grepl("STATISTICS", Major))
+
+stats_data_majors
+```
+
+### 2. Write code that transforms the data below:
+
+[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"
+
+[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry"
+
+[9] "elderberry"   "lime"         "lychee"       "mulberry"
+
+[13] "olive"        "salal berry"
+
+Into a format like this:
+
+c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili
+pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry")
+
+```{r}
+(exotic_fruits <-c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry"))
+```
+
+```{r}
+(new_fruit <- glue::glue('c("{fruitlist}")',
+  fruitlist = glue::glue_collapse(exotic_fruits, sep = '", "')))
+```
+
+The two exercises below are taken from R for Data Science, 14.3.5.1 in the on-line version:
+
+### 3. Describe, in words, what these expressions will match:
+
+  * (.)\1\1
+  * "(.)(.)\\2\\1"
+  * (..)\1
+  * "(.).\\1.\\1"
+  * "(.)(.)(.).*\\3\\2\\1"
+
+```{r}
+# * `(.)\1\1`: The same character showing up three times in a row.
+```
+
+#### Clarification
+
+ * (.) Capturing Group
+ * . matches any character (with the exception of line terminators)
+ * \1 matches the same text as most recently matched by the 1st capturing group
+ * \1 matches the same text as most recently matched by the 1st capturing group
+
+```{r}
+# * `"(.)(.)\\2\\1"`: A pair of characters followed by the same pair of characters in reversed order.
+```
+
+#### Clarification
+
+ * (.) 1st Capturing Group
+ * . matches any character (with the exception of line terminators)
+ * (.) 2nd Capturing Group
+ * . matches any character (with the exception of line terminators)
+ * \ matches the character word for word
+ * 2 matches the character 2 word for word
+ * \ matches the character word for word (case sensitive)
+ 
+```{r}
+ # * `(..)\1`: Any two characters repeated.
+```
+ 
+#### Clarification
+
+ * (..) Capturing Group
+ * . matches any character (with the exception  of line terminators)
+ * . matches any character (with the exception  of line terminators)
+ * \1 matches the same text as most recently matched by the 1st
+
+```{r}
+# * `"(.).\\1.\\1"`: Character followed by any character, the original character, any other character, the original character again.
+```
+
+#### Clarification
+
+ * (.) Capturing Group
+ * . matches any character (with the exception of line terminators)
+ * . matches any character (with the exception of line terminators)
+ * \ matches the character  word for word (case sensitive)
+ * 1 matches the character 1 word for word (case sensitive)
+ * . matches any character (with the exception of line terminators)
+ * \ matches the character  word for word (case sensitive)
+
+```{r}
+# * `"(.)(.)(.).*\\3\\2\\1"` Three characters followed by zero or more characters of any kind followed by the same three characters but in reverse order.
+```
+
+#### Clarification
+
+ * 1st Capturing Group (.)
+ * . matches any character (with the exception of line terminators)
+ * 2nd Capturing Group (.)
+ * . matches any character (with the exception of line terminators)
+ * 3rd Capturing Group (.)
+ * . matches any character (with the exception of line terminators)
+ * .* matches any character (with the exception of line terminators)
+ * Quantifier — Matches between zero and unlimited times, as many times as possible, giving back as needed (greedy)
+ * \ matches the character  word for word
+ * 3 matches the character 3 word for word
+ * \ matches the character  word for word
+ * 2 matches the character 2 word for word
+ * \ matches the character word for word
+
+### 4. Construct regular expressions to match words that:
+
+  * Start and end with the same character.
+  
+```{r}
+str_bring <- function(string, pattern) {
+  string[str_detect(string, pattern)]
+}
+```
+
+```{r}
+str_bring(words, "^(.).*\\1$")
+```
+
+  * Contain a repeated pair of letters (e.g. "church" contains "ch" repeated twice.)
+  
+```{r}
+str_bring(words, "(..).*\\1")
+```
+  
+  
+  * Contain one letter repeated in at least three places (e.g. "eleven" contains three "e"s.)
+  
+```{r}
+str_bring(words, "([a-z]).*\\1.*\\1")
+```
+
+
+### Synopsis
+
+Regular expressions come handy since we are quite often forced to deal with strings containing unstructured and semi-unstructured data, for that regexps feature some concise langauge application in regard to various patterns showing up in strings.
+
+
+Thank you, note this is the end of the file.
